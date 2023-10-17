@@ -30,10 +30,10 @@ int main(void)
                             minmea_rescale(&frame.latitude, 1000),
                             minmea_rescale(&frame.longitude, 1000),
                             minmea_rescale(&frame.speed, 1000));
-                    printf(INDENT_SPACES "$xxRMC floating point degree coordinates and speed: (%f,%f) %f\n",
+                    printf(INDENT_SPACES "$xxRMC floating point degree coordinates and speed: (%f,%f) %d\n",
                             minmea_tocoord(&frame.latitude),
                             minmea_tocoord(&frame.longitude),
-                            minmea_tofloat(&frame.speed));
+                            minmea_todouble(&frame.speed));
                 }
                 else {
                     printf(INDENT_SPACES "$xxRMC sentence is not parsed\n");
@@ -63,9 +63,9 @@ int main(void)
                             minmea_rescale(&frame.longitude_error_deviation, 10),
                             minmea_rescale(&frame.altitude_error_deviation, 10));
                     printf(INDENT_SPACES "$xxGST floating point degree latitude, longitude and altitude error deviation: (%f,%f,%f)",
-                            minmea_tofloat(&frame.latitude_error_deviation),
-                            minmea_tofloat(&frame.longitude_error_deviation),
-                            minmea_tofloat(&frame.altitude_error_deviation));
+                            minmea_todouble(&frame.latitude_error_deviation),
+                            minmea_todouble(&frame.longitude_error_deviation),
+                            minmea_todouble(&frame.altitude_error_deviation));
                 }
                 else {
                     printf(INDENT_SPACES "$xxGST sentence is not parsed\n");
@@ -93,13 +93,13 @@ int main(void)
                struct minmea_sentence_vtg frame;
                if (minmea_parse_vtg(&frame, line)) {
                     printf(INDENT_SPACES "$xxVTG: true track degrees = %f\n",
-                           minmea_tofloat(&frame.true_track_degrees));
+                           minmea_todouble(&frame.true_track_degrees));
                     printf(INDENT_SPACES "        magnetic track degrees = %f\n",
-                           minmea_tofloat(&frame.magnetic_track_degrees));
+                           minmea_todouble(&frame.magnetic_track_degrees));
                     printf(INDENT_SPACES "        speed knots = %f\n",
-                            minmea_tofloat(&frame.speed_knots));
+                            minmea_todouble(&frame.speed_knots));
                     printf(INDENT_SPACES "        speed kph = %f\n",
-                            minmea_tofloat(&frame.speed_kph));
+                            minmea_todouble(&frame.speed_kph));
                }
                else {
                     printf(INDENT_SPACES "$xxVTG sentence is not parsed\n");

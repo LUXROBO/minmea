@@ -1,6 +1,6 @@
 # minmea, a lightweight GPS NMEA 0183 parser library
 
-[![C/C++ 
+[![C/C++
 CI](https://github.com/kosma/minmea/actions/workflows/c-cpp.yml/badge.svg)](https://github.com/kosma/minmea/actions/workflows/c-cpp.yml)
 
 Minmea is a minimalistic GPS parser library written in pure C intended for
@@ -92,10 +92,10 @@ while (fgets(line, sizeof(line), stdin) != NULL) {
                         minmea_rescale(&frame.latitude, 1000),
                         minmea_rescale(&frame.longitude, 1000),
                         minmea_rescale(&frame.speed, 1000));
-                printf("$RMC floating point degree coordinates and speed: (%f,%f) %f\n",
+                printf("$RMC floating point degree coordinates and speed: (%f,%f) %d\n",
                         minmea_tocoord(&frame.latitude),
                         minmea_tocoord(&frame.longitude),
-                        minmea_tofloat(&frame.speed));
+                        minmea_todouble(&frame.speed));
             }
         } break;
 

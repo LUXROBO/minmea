@@ -76,7 +76,7 @@ bool minmea_check(const char *sentence, bool strict)
     while (*sentence == '\r' || *sentence == '\n') {
         sentence++;
     }
-    
+
     if (*sentence) {
         return false;
     }
@@ -155,10 +155,10 @@ bool minmea_scan(const char *sentence, const char *format, ...)
                 *va_arg(ap, int *) = value;
             } break;
 
-            case 'f': { // Fractional value with scale (struct minmea_float).
+            case 'f': { // Fractional value with scale (struct minmea_double).
                 int sign = 0;
-                int_least32_t value = -1;
-                int_least32_t scale = 0;
+                int_least64_t value = -1;
+                int_least64_t scale = 0;
 
                 if (field) {
                     while (minmea_isfield(*field)) {
@@ -170,7 +170,7 @@ bool minmea_scan(const char *sentence, const char *format, ...)
                             int digit = *field - '0';
                             if (value == -1)
                                 value = 0;
-                            if (value > (INT_LEAST32_MAX-digit) / 10) {
+                            if (value > (INT_LEAST64_MAX-digit) / 10) {
                                 /* we ran out of bits, what do we do? */
                                 if (scale) {
                                     /* truncate extra precision */
@@ -211,7 +211,7 @@ bool minmea_scan(const char *sentence, const char *format, ...)
                 if (sign)
                     value *= sign;
 
-                *va_arg(ap, struct minmea_float *) = (struct minmea_float) {value, scale};
+                *va_arg(ap, struct minmea_double *) = (struct minmea_double) {value, scale};
             } break;
 
             case 'i': { // Integer value, default 0 (int).
@@ -299,8 +299,8 @@ bool minmea_scan(const char *sentence, const char *format, ...)
 
                     // Extra: fractional time. Saved as microseconds.
                     if (*field++ == '.') {
-                        uint32_t value = 0;
-                        uint32_t scale = 1000000LU;
+                        uint64_t value = 0;
+                        uint64_t scale = 1000000LU;
                         while (isdigit((unsigned char) *field) && scale > 1) {
                             value = (value * 10) + (*field++ - '0');
                             scale /= 10;

@@ -1116,10 +1116,10 @@ END_TEST
 
 START_TEST(test_minmea_float)
 {
-    ck_assert(isnan(minmea_tofloat(&(struct minmea_float) { 42, 0 })));
-    assert_float_eq(minmea_tofloat(&(struct minmea_float) { 7, 1 }), 7.0f);
-    assert_float_eq(minmea_tofloat(&(struct minmea_float) { -200, 100 }), -2.0f);
-    assert_float_eq(minmea_tofloat(&(struct minmea_float) { 15, 10 }), 1.5f);
+    ck_assert(isnan(minmea_todouble(&(struct minmea_float) { 42, 0 })));
+    assert_float_eq(minmea_todouble(&(struct minmea_float) { 7, 1 }), 7.0f);
+    assert_float_eq(minmea_todouble(&(struct minmea_float) { -200, 100 }), -2.0f);
+    assert_float_eq(minmea_todouble(&(struct minmea_float) { 15, 10 }), 1.5f);
 }
 END_TEST
 

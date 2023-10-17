@@ -40,9 +40,9 @@ enum minmea_sentence_id {
     MINMEA_SENTENCE_ZDA,
 };
 
-struct minmea_float {
-    int_least32_t value;
-    int_least32_t scale;
+struct minmea_double {
+    int_least64_t value;
+    int_least64_t scale;
 };
 
 struct minmea_date {
@@ -60,36 +60,36 @@ struct minmea_time {
 
 struct minmea_sentence_gbs {
     struct minmea_time time;
-    struct minmea_float err_latitude;
-    struct minmea_float err_longitude;
-    struct minmea_float err_altitude;
+    struct minmea_double err_latitude;
+    struct minmea_double err_longitude;
+    struct minmea_double err_altitude;
     int svid;
-    struct minmea_float prob;
-    struct minmea_float bias;
-    struct minmea_float stddev;
+    struct minmea_double prob;
+    struct minmea_double bias;
+    struct minmea_double stddev;
 };
 
 struct minmea_sentence_rmc {
     struct minmea_time time;
     bool valid;
-    struct minmea_float latitude;
-    struct minmea_float longitude;
-    struct minmea_float speed;
-    struct minmea_float course;
+    struct minmea_double latitude;
+    struct minmea_double longitude;
+    struct minmea_double speed;
+    struct minmea_double course;
     struct minmea_date date;
-    struct minmea_float variation;
+    struct minmea_double variation;
 };
 
 struct minmea_sentence_gga {
     struct minmea_time time;
-    struct minmea_float latitude;
-    struct minmea_float longitude;
+    struct minmea_double latitude;
+    struct minmea_double longitude;
     int fix_quality;
     int satellites_tracked;
-    struct minmea_float hdop;
-    struct minmea_float altitude; char altitude_units;
-    struct minmea_float height; char height_units;
-    struct minmea_float dgps_age;
+    struct minmea_double hdop;
+    struct minmea_double altitude; char altitude_units;
+    struct minmea_double height; char height_units;
+    struct minmea_double dgps_age;
 };
 
 enum minmea_gll_status {
@@ -109,8 +109,8 @@ enum minmea_faa_mode {
 };
 
 struct minmea_sentence_gll {
-    struct minmea_float latitude;
-    struct minmea_float longitude;
+    struct minmea_double latitude;
+    struct minmea_double longitude;
     struct minmea_time time;
     char status;
     char mode;
@@ -118,13 +118,13 @@ struct minmea_sentence_gll {
 
 struct minmea_sentence_gst {
     struct minmea_time time;
-    struct minmea_float rms_deviation;
-    struct minmea_float semi_major_deviation;
-    struct minmea_float semi_minor_deviation;
-    struct minmea_float semi_major_orientation;
-    struct minmea_float latitude_error_deviation;
-    struct minmea_float longitude_error_deviation;
-    struct minmea_float altitude_error_deviation;
+    struct minmea_double rms_deviation;
+    struct minmea_double semi_major_deviation;
+    struct minmea_double semi_minor_deviation;
+    struct minmea_double semi_major_orientation;
+    struct minmea_double latitude_error_deviation;
+    struct minmea_double longitude_error_deviation;
+    struct minmea_double altitude_error_deviation;
 };
 
 enum minmea_gsa_mode {
@@ -142,9 +142,9 @@ struct minmea_sentence_gsa {
     char mode;
     int fix_type;
     int sats[12];
-    struct minmea_float pdop;
-    struct minmea_float hdop;
-    struct minmea_float vdop;
+    struct minmea_double pdop;
+    struct minmea_double hdop;
+    struct minmea_double vdop;
 };
 
 struct minmea_sat_info {
@@ -162,10 +162,10 @@ struct minmea_sentence_gsv {
 };
 
 struct minmea_sentence_vtg {
-    struct minmea_float true_track_degrees;
-    struct minmea_float magnetic_track_degrees;
-    struct minmea_float speed_knots;
-    struct minmea_float speed_kph;
+    struct minmea_double true_track_degrees;
+    struct minmea_double magnetic_track_degrees;
+    struct minmea_double speed_knots;
+    struct minmea_double speed_kph;
     enum minmea_faa_mode faa_mode;
 };
 
@@ -200,7 +200,7 @@ enum minmea_sentence_id minmea_sentence_id(const char *sentence, bool strict);
  * Scanf-like processor for NMEA sentences. Supports the following formats:
  * c - single character (char *)
  * d - direction, returned as 1/-1, default 0 (int *)
- * f - fractional, returned as value + scale (struct minmea_float *)
+ * f - fractional, returned as value + scale (struct minmea_double *)
  * i - decimal, default zero (int *)
  * s - string (char *)
  * t - talker identifier and type (char *)
@@ -238,7 +238,7 @@ int minmea_gettime(struct timespec *ts, const struct minmea_date *date, const st
 /**
  * Rescale a fixed-point value to a different scale. Rounds towards zero.
  */
-static inline int_least32_t minmea_rescale(const struct minmea_float *f, int_least32_t new_scale)
+static inline int_least64_t minmea_rescale(const struct minmea_double *f, int_least64_t new_scale)
 {
     if (f->scale == 0)
         return 0;
@@ -254,28 +254,28 @@ static inline int_least32_t minmea_rescale(const struct minmea_float *f, int_lea
  * Convert a fixed-point value to a floating-point value.
  * Returns NaN for "unknown" values.
  */
-static inline float minmea_tofloat(const struct minmea_float *f)
+static inline double minmea_todouble(const struct minmea_double *f)
 {
     if (f->scale == 0)
         return NAN;
-    return (float) f->value / (float) f->scale;
+    return (double) f->value / (double) f->scale;
 }
 
 /**
  * Convert a raw coordinate to a floating point DD.DDD... value.
  * Returns NaN for "unknown" values.
  */
-static inline float minmea_tocoord(const struct minmea_float *f)
+static inline double minmea_tocoord(const struct minmea_double *f)
 {
     if (f->scale == 0)
         return NAN;
-    if (f->scale  > (INT_LEAST32_MAX / 100))
+    if (f->scale  > (INT_LEAST64_MAX / 100))
         return NAN;
-    if (f->scale < (INT_LEAST32_MIN / 100))
+    if (f->scale < (INT_LEAST64_MIN / 100))
         return NAN;
-    int_least32_t degrees = f->value / (f->scale * 100);
-    int_least32_t minutes = f->value % (f->scale * 100);
-    return (float) degrees + (float) minutes / (60 * f->scale);
+    int_least64_t degrees = f->value / (f->scale * 100);
+    int_least64_t minutes = f->value % (f->scale * 100);
+    return (double) degrees + (double) minutes / (60 * f->scale);
 }
 
 /**
